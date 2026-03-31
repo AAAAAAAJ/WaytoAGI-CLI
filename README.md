@@ -41,13 +41,13 @@ WaytoAGI CLI is an agentic coding tool that lives in your terminal. It understan
 ### npm (Recommended)
 
 ```bash
-npm install -g @anthropic-ai/claude-code
+npm install -g waytoagi
 ```
 
 ### Homebrew (macOS)
 
 ```bash
-brew install claude-code
+brew install waytoagi
 ```
 
 > Requires Node.js 18+
@@ -59,10 +59,10 @@ brew install claude-code
 cd your-project
 
 # Start WaytoAGI CLI
-claude
+waytoagi
 
 # Or start with a task
-claude "explain this codebase to me"
+waytoagi "explain this codebase to me"
 ```
 
 ## Usage
@@ -70,7 +70,7 @@ claude "explain this codebase to me"
 ### Interactive Mode
 
 ```bash
-claude
+waytoagi
 ```
 
 Launch the CLI in interactive mode. Ask questions, give instructions, or let it explore your codebase.
@@ -78,16 +78,16 @@ Launch the CLI in interactive mode. Ask questions, give instructions, or let it 
 ### One-shot Mode
 
 ```bash
-claude "fix the failing tests in src/utils"
-claude "add dark mode support to the settings page"
-claude "refactor the auth middleware to use JWT"
+waytoagi "fix the failing tests in src/utils"
+waytoagi "add dark mode support to the settings page"
+waytoagi "refactor the auth middleware to use JWT"
 ```
 
 ### Pipe Mode
 
 ```bash
-cat error.log | claude "explain these errors and suggest fixes"
-git diff | claude "review this change"
+cat error.log | waytoagi "explain these errors and suggest fixes"
+git diff | waytoagi "review this change"
 ```
 
 ## Features
@@ -121,9 +121,9 @@ git diff | claude "review this change"
 
 ## Configuration
 
-### CLAUDE.md
+### WAYTOAGI.md
 
-Create a `CLAUDE.md` file in your project root to provide project-specific context:
+Create a `WAYTOAGI.md` file in your project root to provide project-specific context:
 
 ```markdown
 # Project Context
@@ -138,10 +138,10 @@ Create a `CLAUDE.md` file in your project root to provide project-specific conte
 
 ```bash
 # Global settings
-~/.claude/settings.json
+~/.waytoagi/settings.json
 
 # Project settings
-.claude/settings.json
+.waytoagi/settings.json
 ```
 
 ## Keyboard Shortcuts
@@ -166,7 +166,7 @@ Create a `CLAUDE.md` file in your project root to provide project-specific conte
 
 - **Node.js** 18 or later
 - **OS**: macOS, Linux, or Windows (via WSL)
-- **API Key**: Anthropic API key or Claude Pro/Max subscription
+- **API Key**: WaytoAGI API key or Pro/Max subscription
 
 ## Community
 
