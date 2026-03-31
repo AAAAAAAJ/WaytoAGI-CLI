@@ -38,16 +38,19 @@ WaytoAGI CLI is an agentic coding tool that lives in your terminal. It understan
 
 ## Installation
 
-### npm (Recommended)
+### From GitHub (Recommended)
 
 ```bash
-npm install -g waytoagi
+npm install -g github:AAAAAAAJ/WaytoAGI-CLI
 ```
 
-### Homebrew (macOS)
+### From source
 
 ```bash
-brew install waytoagi
+git clone https://github.com/AAAAAAAJ/WaytoAGI-CLI.git
+cd WaytoAGI-CLI
+npm install
+npm link
 ```
 
 > Requires Node.js 18+
