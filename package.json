@@ -5,9 +5,7 @@
   "bin": {
     "waytoagi": "./bin/waytoagi.js"
   },
-  "scripts": {
-    "postinstall": "node postinstall.js"
-  },
+  "scripts": {},
   "dependencies": {
     "@anthropic-ai/claude-code": "latest"
   },
