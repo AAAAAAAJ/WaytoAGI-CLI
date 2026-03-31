@@ -48,31 +48,7 @@ if (!fs.existsSync(patchMarker)) {
       'createElement($1,{bold:!0},createElement($1,{color:"#FF4444"},"W"),createElement($1,{color:"#FF8C00"},"a"),createElement($1,{color:"#FFD700"},"y"),createElement($1,{color:"#44FF44"},"t"),createElement($1,{color:"#00CCFF"},"o"),createElement($1,{color:"#4488FF"},"A"),createElement($1,{color:"#9944FF"},"G"),createElement($1,{color:"#FF44CC"},"I"))'
     );
 
-    // ── 3. Replace Clawd mascot with rainbow ASCII banner in full logo ──
-    // The mascot is: createElement(m,{marginY:1},createElement(oR6,null))
-    // where oR6 is the Clawd cat component. Replace with WaytoAGI ASCII art.
-    // Match pattern: createElement(<Box>,{marginY:1},createElement(<ClawdComponent>,null))
-    code = code.replace(
-      /(\w+)\.createElement\((\w+),\{marginY:1\},\1\.createElement\((\w+),null\)\)/g,
-      function(match, react, box, clawd) {
-        // Check this is near the logo area by verifying clawd component renders mascot
-        var v = 'v'; // text component - we'll use the react var
-        return react + '.createElement(' + box + ',{marginY:1,flexDirection:"column"},' +
-          react + '.createElement(' + box + ',{flexDirection:"row"},' +
-            react + '.createElement(' + box + ',{flexDirection:"column"},' +
-              ['\u2588\u2588\u2557    \u2588\u2588\u2557','\u2588\u2588\u2551    \u2588\u2588\u2551','\u2588\u2588\u2551 \u2588\u2557 \u2588\u2588\u2551','\u2588\u2588\u2551\u2588\u2588\u2588\u2557\u2588\u2588\u2551','\u255A\u2588\u2588\u2588\u2554\u2588\u2588\u2588\u2554\u255D',' \u255A\u2550\u2550\u255D\u255A\u2550\u2550\u255D '].map(function(r){return react+'.createElement('+react+'.Fragment.type||"span",{style:{color:"#FF4444"}},'+JSON.stringify(r)+')'}).join(',') +
-            ')' +
-          ')' +
-        ')';
-      }
-    );
-
-    // Actually, the above approach is too complex with Ink's React rendering.
-    // Let's take a simpler approach: replace the Clawd component function itself.
-    // Find: HMz={default:{r1L:" ▐",r1E:"▛███▜" ...
-    // This is the Clawd pose data. We'll replace the component that uses it.
-
-    // Replace the "Welcome back" greeting
+    // ── 3. Replace the "Welcome back" greeting ──
     code = code.replace(
       /return`Welcome back \$\{q\}!`/g,
       'return"\\u2728 WaytoAGI CLI \\u2728"'
@@ -91,32 +67,32 @@ if (!fs.existsSync(patchMarker)) {
       '{default:{r1L:"",r1E:"WaytoAGI",r1R:"",r2L:"",r2R:""},"look-left":{r1L:"",r1E:"WaytoAGI",r1R:"",r2L:"",r2R:""},"look-right":{r1L:"",r1E:"WaytoAGI",r1R:"",r2L:"",r2R:""},"arms-up":{r1L:"",r1E:"WaytoAGI",r1R:"",r2L:"",r2R:""}}'
     );
 
-    // Replace the Clawd body "█████" with empty/space
-    // And the feet "▘▘ ▝▝" with tagline
+    // Replace the Clawd body "█████" with space (valid React child = string)
     code = code.replace(
       /color:"clawd_body",backgroundColor:"clawd_background"\},"█████"\)/g,
-      'color:"#FF8C00"},{})' // empty body
+      'color:"#FF8C00"}," ")'
     );
 
+    // Replace feet with tagline
     code = code.replace(
       /color:"clawd_body"\},"  ","▘▘ ▝▝","  "\)/g,
       'dimColor:!0},"AI Community \\u00b7 Empowered by AI")'
     );
 
-    // Change clawd_body color references to rainbow
+    // Hide Clawd side decorations (replace with empty strings, not objects)
     code = code.replace(
       /color:"clawd_body"\},"▗"\)/g,
-      'color:"#FF4444"},"")'
+      'color:"#FF4444"}," ")'
     );
     code = code.replace(
       /color:"clawd_body"\},"▖"\)/g,
-      'color:"#FF44CC"},"")'
+      'color:"#FF44CC"}," ")'
     );
 
     // Change Clawd bottom pose text
     code = code.replace(
       /default:" ▗   ▖ "/g,
-      'default:""'
+      'default:" "'
     );
 
     // ── 5. System prompt identity ──
