@@ -58,45 +58,76 @@ if (!fs.existsSync(patchMarker)) {
       'return"\\u2728 WaytoAGI CLI \\u2728"'
     );
 
-    // ── 4. Replace Clawd mascot with rainbow ASCII art banner ──
-    // Find: <React>.createElement(<Box>,{marginY:1},<React>.createElement(<ClawdComponent>,null))
-    // Replace with rainbow ASCII art rows
+    // ── 4. Replace the entire Clawd mascot component (oR6) ──
+    // Match: function oR6(q){...return P}
+    // Replace with a function that renders rainbow ASCII art WaytoAGI
     code = code.replace(
-      /(\w+)\.createElement\((\w+),\{marginY:1\},\1\.createElement\((\w+),null\)\)/g,
-      function(match, R, Box, Clawd, offset, fullCode) {
-        // Only patch in the logo area (offset ~10M)
-        if (offset < 10000000 || offset > 11000000) return match;
-
-        // Find the Text component variable by looking nearby for createElement(X,{dimColor:
-        var nearby = fullCode.substring(offset, Math.min(fullCode.length, offset + 500));
-        var tm = nearby.match(new RegExp(R + '\\.createElement\\((\\w+),\\{dimColor'));
-        var TextComp = tm ? tm[1] : 'v';
-
-        // ASCII art rows for each letter with its color
-        // W=#FF4444 a=#FF8C00 y=#FFD700 t=#44FF44 o=#00CCFF A=#4488FF G=#9944FF I=#FF44CC
-        var letters = [
-          { c: '#FF4444', rows: ['\u2588\u2588\u2557    \u2588\u2588\u2557','\u2588\u2588\u2551    \u2588\u2588\u2551','\u2588\u2588\u2551 \u2588\u2557 \u2588\u2588\u2551','\u2588\u2588\u2551\u2588\u2588\u2588\u2557\u2588\u2588\u2551','\u255A\u2588\u2588\u2588\u2554\u2588\u2588\u2588\u2554\u255D',' \u255A\u2550\u2550\u255D\u255A\u2550\u2550\u255D '] },
-          { c: '#FF8C00', rows: [' \u2588\u2588\u2588\u2588\u2588\u2557 ','\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557','\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2551','\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2551','\u2588\u2588\u2551  \u2588\u2588\u2551','\u255A\u2550\u255D  \u255A\u2550\u255D'] },
-          { c: '#FFD700', rows: ['\u2588\u2588\u2557   \u2588\u2588\u2557','\u255A\u2588\u2588\u2557 \u2588\u2588\u2554\u255D',' \u255A\u2588\u2588\u2588\u2588\u2554\u255D ','  \u255A\u2588\u2588\u2554\u255D  ','   \u2588\u2588\u2551   ','   \u255A\u2550\u255D   '] },
-          { c: '#44FF44', rows: ['\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557','\u255A\u2550\u2550\u2588\u2588\u2554\u2550\u2550\u255D','   \u2588\u2588\u2551   ','   \u2588\u2588\u2551   ','   \u2588\u2588\u2551   ','   \u255A\u2550\u255D   '] },
-          { c: '#00CCFF', rows: [' \u2588\u2588\u2588\u2588\u2588\u2588\u2557 ','\u2588\u2588\u2554\u2550\u2550\u2550\u2588\u2588\u2557','\u2588\u2588\u2551   \u2588\u2588\u2551','\u2588\u2588\u2551   \u2588\u2588\u2551','\u255A\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255D',' \u255A\u2550\u2550\u2550\u2550\u2550\u255D '] },
-          { c: '#4488FF', rows: [' \u2588\u2588\u2588\u2588\u2588\u2557 ','\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557','\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2551','\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2551','\u2588\u2588\u2551  \u2588\u2588\u2551','\u255A\u2550\u255D  \u255A\u2550\u255D'] },
-          { c: '#9944FF', rows: [' \u2588\u2588\u2588\u2588\u2588\u2588\u2557 ','\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255D ','\u2588\u2588\u2551  \u2588\u2588\u2588\u2557','\u2588\u2588\u2551   \u2588\u2588\u2551','\u255A\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255D',' \u255A\u2550\u2550\u2550\u2550\u2550\u255D '] },
-          { c: '#FF44CC', rows: [' \u2588\u2588\u2557 ',' \u2588\u2588\u2551 ',' \u2588\u2588\u2551 ',' \u2588\u2588\u2551 ',' \u2588\u2588\u2551 ',' \u255A\u2550\u255D '] }
-        ];
-
-        // Build: Box(column) > 6x Box(row) > 8x Text(colored letter row)
-        // v = Text component (Ink), Box = m
-        var rowElements = [];
-        for (var r = 0; r < 6; r++) {
-          var cols = [];
-          for (var l = 0; l < letters.length; l++) {
-            cols.push(R + '.createElement(' + TextComp + ',{color:"' + letters[l].c + '"},' + JSON.stringify(letters[l].rows[r]) + ')');
-          }
-          rowElements.push(R + '.createElement(' + Box + ',{flexDirection:"row"},' + cols.join(',') + ')');
-        }
-
-        return R + '.createElement(' + Box + ',{marginY:1,flexDirection:"column"},' + rowElements.join(',') + ')';
+      /function oR6\(q\)\{let K=Y6\(26\)[\s\S]*?return P\}/,
+      function(match) {
+        // Find the React and component vars used in the original function
+        // WY = React, v = Text, m = Box (from the original function body)
+        return 'function oR6(q){' +
+          'return WY.createElement(m,{flexDirection:"column"},' +
+            // Row 1
+            'WY.createElement(m,{flexDirection:"row"},' +
+              'WY.createElement(v,{color:"#FF4444"},"\\u2588\\u2588\\u2557    \\u2588\\u2588\\u2557"),' +
+              'WY.createElement(v,{color:"#FF8C00"}," \\u2588\\u2588\\u2588\\u2588\\u2588\\u2557 "),' +
+              'WY.createElement(v,{color:"#FFD700"},"\\u2588\\u2588\\u2557   \\u2588\\u2588\\u2557"),' +
+              'WY.createElement(v,{color:"#44FF44"},"\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2557"),' +
+              'WY.createElement(v,{color:"#00CCFF"}," \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2557 "),' +
+              'WY.createElement(v,{color:"#4488FF"}," \\u2588\\u2588\\u2588\\u2588\\u2588\\u2557 "),' +
+              'WY.createElement(v,{color:"#9944FF"}," \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2557 "),' +
+              'WY.createElement(v,{color:"#FF44CC"}," \\u2588\\u2588\\u2557 ")),' +
+            // Row 2
+            'WY.createElement(m,{flexDirection:"row"},' +
+              'WY.createElement(v,{color:"#FF4444"},"\\u2588\\u2588\\u2551    \\u2588\\u2588\\u2551"),' +
+              'WY.createElement(v,{color:"#FF8C00"},"\\u2588\\u2588\\u2554\\u2550\\u2550\\u2588\\u2588\\u2557"),' +
+              'WY.createElement(v,{color:"#FFD700"},"\\u255A\\u2588\\u2588\\u2557 \\u2588\\u2588\\u2554\\u255D"),' +
+              'WY.createElement(v,{color:"#44FF44"},"\\u255A\\u2550\\u2550\\u2588\\u2588\\u2554\\u2550\\u2550\\u255D"),' +
+              'WY.createElement(v,{color:"#00CCFF"},"\\u2588\\u2588\\u2554\\u2550\\u2550\\u2550\\u2588\\u2588\\u2557"),' +
+              'WY.createElement(v,{color:"#4488FF"},"\\u2588\\u2588\\u2554\\u2550\\u2550\\u2588\\u2588\\u2557"),' +
+              'WY.createElement(v,{color:"#9944FF"},"\\u2588\\u2588\\u2554\\u2550\\u2550\\u2550\\u2550\\u255D "),' +
+              'WY.createElement(v,{color:"#FF44CC"}," \\u2588\\u2588\\u2551 ")),' +
+            // Row 3
+            'WY.createElement(m,{flexDirection:"row"},' +
+              'WY.createElement(v,{color:"#FF4444"},"\\u2588\\u2588\\u2551 \\u2588\\u2557 \\u2588\\u2588\\u2551"),' +
+              'WY.createElement(v,{color:"#FF8C00"},"\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2551"),' +
+              'WY.createElement(v,{color:"#FFD700"}," \\u255A\\u2588\\u2588\\u2588\\u2588\\u2554\\u255D "),' +
+              'WY.createElement(v,{color:"#44FF44"},"   \\u2588\\u2588\\u2551   "),' +
+              'WY.createElement(v,{color:"#00CCFF"},"\\u2588\\u2588\\u2551   \\u2588\\u2588\\u2551"),' +
+              'WY.createElement(v,{color:"#4488FF"},"\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2551"),' +
+              'WY.createElement(v,{color:"#9944FF"},"\\u2588\\u2588\\u2551  \\u2588\\u2588\\u2588\\u2557"),' +
+              'WY.createElement(v,{color:"#FF44CC"}," \\u2588\\u2588\\u2551 ")),' +
+            // Row 4
+            'WY.createElement(m,{flexDirection:"row"},' +
+              'WY.createElement(v,{color:"#FF4444"},"\\u2588\\u2588\\u2551\\u2588\\u2588\\u2588\\u2557\\u2588\\u2588\\u2551"),' +
+              'WY.createElement(v,{color:"#FF8C00"},"\\u2588\\u2588\\u2554\\u2550\\u2550\\u2588\\u2588\\u2551"),' +
+              'WY.createElement(v,{color:"#FFD700"},"  \\u255A\\u2588\\u2588\\u2554\\u255D  "),' +
+              'WY.createElement(v,{color:"#44FF44"},"   \\u2588\\u2588\\u2551   "),' +
+              'WY.createElement(v,{color:"#00CCFF"},"\\u2588\\u2588\\u2551   \\u2588\\u2588\\u2551"),' +
+              'WY.createElement(v,{color:"#4488FF"},"\\u2588\\u2588\\u2554\\u2550\\u2550\\u2588\\u2588\\u2551"),' +
+              'WY.createElement(v,{color:"#9944FF"},"\\u2588\\u2588\\u2551   \\u2588\\u2588\\u2551"),' +
+              'WY.createElement(v,{color:"#FF44CC"}," \\u2588\\u2588\\u2551 ")),' +
+            // Row 5
+            'WY.createElement(m,{flexDirection:"row"},' +
+              'WY.createElement(v,{color:"#FF4444"},"\\u255A\\u2588\\u2588\\u2588\\u2554\\u2588\\u2588\\u2588\\u2554\\u255D"),' +
+              'WY.createElement(v,{color:"#FF8C00"},"\\u2588\\u2588\\u2551  \\u2588\\u2588\\u2551"),' +
+              'WY.createElement(v,{color:"#FFD700"},"   \\u2588\\u2588\\u2551   "),' +
+              'WY.createElement(v,{color:"#44FF44"},"   \\u2588\\u2588\\u2551   "),' +
+              'WY.createElement(v,{color:"#00CCFF"},"\\u255A\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2554\\u255D"),' +
+              'WY.createElement(v,{color:"#4488FF"},"\\u2588\\u2588\\u2551  \\u2588\\u2588\\u2551"),' +
+              'WY.createElement(v,{color:"#9944FF"},"\\u255A\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2554\\u255D"),' +
+              'WY.createElement(v,{color:"#FF44CC"}," \\u2588\\u2588\\u2551 ")),' +
+            // Row 6
+            'WY.createElement(m,{flexDirection:"row"},' +
+              'WY.createElement(v,{color:"#FF4444"}," \\u255A\\u2550\\u2550\\u255D\\u255A\\u2550\\u2550\\u255D "),' +
+              'WY.createElement(v,{color:"#FF8C00"},"\\u255A\\u2550\\u255D  \\u255A\\u2550\\u255D"),' +
+              'WY.createElement(v,{color:"#FFD700"},"   \\u255A\\u2550\\u255D   "),' +
+              'WY.createElement(v,{color:"#44FF44"},"   \\u255A\\u2550\\u255D   "),' +
+              'WY.createElement(v,{color:"#00CCFF"}," \\u255A\\u2550\\u2550\\u2550\\u2550\\u2550\\u255D "),' +
+              'WY.createElement(v,{color:"#4488FF"},"\\u255A\\u2550\\u255D  \\u255A\\u2550\\u255D"),' +
+              'WY.createElement(v,{color:"#9944FF"}," \\u255A\\u2550\\u2550\\u2550\\u2550\\u2550\\u255D "),' +
+              'WY.createElement(v,{color:"#FF44CC"}," \\u255A\\u2550\\u255D ")))}'
       }
     );
 
