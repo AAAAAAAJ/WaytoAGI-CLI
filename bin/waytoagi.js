@@ -58,35 +58,83 @@ if (!fs.existsSync(patchMarker)) {
       'return"\\u2728 WaytoAGI CLI \\u2728"'
     );
 
-    // ── 4. Replace the entire Clawd mascot component (oR6) ──
-    // Match: function oR6(q){...return P}
-    // Replace with a function that renders rainbow ASCII art WaytoAGI
+    // ── 4. Force single-column layout (never use horizontal/split) ──
+    // Original: function tkK(q){if(q>=70)return"horizontal";return"compact"}
+    // Change to always return "compact" so we get single-column full-width layout
     code = code.replace(
-      /function oR6\(q\)\{let K=Y6\(26\)[\s\S]*?return P\}/,
-      function(match) {
-        // Replace with compact rainbow "WaytoAGI" text logo
-        // This fits in the narrow left column of the two-column layout
-        // Uses large bold colored letters + a decorative line
-        return 'function oR6(q){' +
-          'return WY.createElement(m,{flexDirection:"column",alignItems:"center"},' +
-            // Rainbow "WaytoAGI" in bold
-            'WY.createElement(m,{flexDirection:"row"},' +
-              'WY.createElement(v,{bold:!0,color:"#FF4444"},"W"),' +
-              'WY.createElement(v,{bold:!0,color:"#FF8C00"},"a"),' +
-              'WY.createElement(v,{bold:!0,color:"#FFD700"},"y"),' +
-              'WY.createElement(v,{bold:!0,color:"#44FF44"},"t"),' +
-              'WY.createElement(v,{bold:!0,color:"#00CCFF"},"o"),' +
-              'WY.createElement(v,{bold:!0,color:"#4488FF"},"A"),' +
-              'WY.createElement(v,{bold:!0,color:"#9944FF"},"G"),' +
-              'WY.createElement(v,{bold:!0,color:"#FF44CC"},"I")),' +
-            // Decorative line
-            'WY.createElement(v,{dimColor:!0},"\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500"),' +
-            // Tagline
-            'WY.createElement(v,{dimColor:!0},"AI Community"))}'
-      }
+      /function tkK\(q\)\{if\(q>=70\)return"horizontal";return"compact"\}/,
+      'function tkK(q){return"compact"}'
     );
 
-    // ── 5. System prompt identity ──
+    // ── 5. Replace the entire Clawd mascot component (oR6) with rainbow ASCII art ──
+    code = code.replace(
+      /function oR6\(q\)\{let K=Y6\(26\)[\s\S]*?return P\}/,
+      'function oR6(q){' +
+        'return WY.createElement(m,{flexDirection:"column"},' +
+          // Row 1
+          'WY.createElement(m,{flexDirection:"row"},' +
+            'WY.createElement(v,{color:"#FF4444"},"\\u2588\\u2588\\u2557    \\u2588\\u2588\\u2557"),' +
+            'WY.createElement(v,{color:"#FF8C00"}," \\u2588\\u2588\\u2588\\u2588\\u2588\\u2557 "),' +
+            'WY.createElement(v,{color:"#FFD700"},"\\u2588\\u2588\\u2557   \\u2588\\u2588\\u2557"),' +
+            'WY.createElement(v,{color:"#44FF44"},"\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2557"),' +
+            'WY.createElement(v,{color:"#00CCFF"}," \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2557 "),' +
+            'WY.createElement(v,{color:"#4488FF"}," \\u2588\\u2588\\u2588\\u2588\\u2588\\u2557 "),' +
+            'WY.createElement(v,{color:"#9944FF"}," \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2557 "),' +
+            'WY.createElement(v,{color:"#FF44CC"}," \\u2588\\u2588\\u2557 ")),' +
+          // Row 2
+          'WY.createElement(m,{flexDirection:"row"},' +
+            'WY.createElement(v,{color:"#FF4444"},"\\u2588\\u2588\\u2551    \\u2588\\u2588\\u2551"),' +
+            'WY.createElement(v,{color:"#FF8C00"},"\\u2588\\u2588\\u2554\\u2550\\u2550\\u2588\\u2588\\u2557"),' +
+            'WY.createElement(v,{color:"#FFD700"},"\\u255A\\u2588\\u2588\\u2557 \\u2588\\u2588\\u2554\\u255D"),' +
+            'WY.createElement(v,{color:"#44FF44"},"\\u255A\\u2550\\u2550\\u2588\\u2588\\u2554\\u2550\\u2550\\u255D"),' +
+            'WY.createElement(v,{color:"#00CCFF"},"\\u2588\\u2588\\u2554\\u2550\\u2550\\u2550\\u2588\\u2588\\u2557"),' +
+            'WY.createElement(v,{color:"#4488FF"},"\\u2588\\u2588\\u2554\\u2550\\u2550\\u2588\\u2588\\u2557"),' +
+            'WY.createElement(v,{color:"#9944FF"},"\\u2588\\u2588\\u2554\\u2550\\u2550\\u2550\\u2550\\u255D "),' +
+            'WY.createElement(v,{color:"#FF44CC"}," \\u2588\\u2588\\u2551 ")),' +
+          // Row 3
+          'WY.createElement(m,{flexDirection:"row"},' +
+            'WY.createElement(v,{color:"#FF4444"},"\\u2588\\u2588\\u2551 \\u2588\\u2557 \\u2588\\u2588\\u2551"),' +
+            'WY.createElement(v,{color:"#FF8C00"},"\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2551"),' +
+            'WY.createElement(v,{color:"#FFD700"}," \\u255A\\u2588\\u2588\\u2588\\u2588\\u2554\\u255D "),' +
+            'WY.createElement(v,{color:"#44FF44"},"   \\u2588\\u2588\\u2551   "),' +
+            'WY.createElement(v,{color:"#00CCFF"},"\\u2588\\u2588\\u2551   \\u2588\\u2588\\u2551"),' +
+            'WY.createElement(v,{color:"#4488FF"},"\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2551"),' +
+            'WY.createElement(v,{color:"#9944FF"},"\\u2588\\u2588\\u2551  \\u2588\\u2588\\u2588\\u2557"),' +
+            'WY.createElement(v,{color:"#FF44CC"}," \\u2588\\u2588\\u2551 ")),' +
+          // Row 4
+          'WY.createElement(m,{flexDirection:"row"},' +
+            'WY.createElement(v,{color:"#FF4444"},"\\u2588\\u2588\\u2551\\u2588\\u2588\\u2588\\u2557\\u2588\\u2588\\u2551"),' +
+            'WY.createElement(v,{color:"#FF8C00"},"\\u2588\\u2588\\u2554\\u2550\\u2550\\u2588\\u2588\\u2551"),' +
+            'WY.createElement(v,{color:"#FFD700"},"  \\u255A\\u2588\\u2588\\u2554\\u255D  "),' +
+            'WY.createElement(v,{color:"#44FF44"},"   \\u2588\\u2588\\u2551   "),' +
+            'WY.createElement(v,{color:"#00CCFF"},"\\u2588\\u2588\\u2551   \\u2588\\u2588\\u2551"),' +
+            'WY.createElement(v,{color:"#4488FF"},"\\u2588\\u2588\\u2554\\u2550\\u2550\\u2588\\u2588\\u2551"),' +
+            'WY.createElement(v,{color:"#9944FF"},"\\u2588\\u2588\\u2551   \\u2588\\u2588\\u2551"),' +
+            'WY.createElement(v,{color:"#FF44CC"}," \\u2588\\u2588\\u2551 ")),' +
+          // Row 5
+          'WY.createElement(m,{flexDirection:"row"},' +
+            'WY.createElement(v,{color:"#FF4444"},"\\u255A\\u2588\\u2588\\u2588\\u2554\\u2588\\u2588\\u2588\\u2554\\u255D"),' +
+            'WY.createElement(v,{color:"#FF8C00"},"\\u2588\\u2588\\u2551  \\u2588\\u2588\\u2551"),' +
+            'WY.createElement(v,{color:"#FFD700"},"   \\u2588\\u2588\\u2551   "),' +
+            'WY.createElement(v,{color:"#44FF44"},"   \\u2588\\u2588\\u2551   "),' +
+            'WY.createElement(v,{color:"#00CCFF"},"\\u255A\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2554\\u255D"),' +
+            'WY.createElement(v,{color:"#4488FF"},"\\u2588\\u2588\\u2551  \\u2588\\u2588\\u2551"),' +
+            'WY.createElement(v,{color:"#9944FF"},"\\u255A\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2554\\u255D"),' +
+            'WY.createElement(v,{color:"#FF44CC"}," \\u2588\\u2588\\u2551 ")),' +
+          // Row 6
+          'WY.createElement(m,{flexDirection:"row"},' +
+            'WY.createElement(v,{color:"#FF4444"}," \\u255A\\u2550\\u2550\\u255D\\u255A\\u2550\\u2550\\u255D "),' +
+            'WY.createElement(v,{color:"#FF8C00"},"\\u255A\\u2550\\u255D  \\u255A\\u2550\\u255D"),' +
+            'WY.createElement(v,{color:"#FFD700"},"   \\u255A\\u2550\\u255D   "),' +
+            'WY.createElement(v,{color:"#44FF44"},"   \\u255A\\u2550\\u255D   "),' +
+            'WY.createElement(v,{color:"#00CCFF"}," \\u255A\\u2550\\u2550\\u2550\\u2550\\u2550\\u255D "),' +
+            'WY.createElement(v,{color:"#4488FF"},"\\u255A\\u2550\\u255D  \\u255A\\u2550\\u255D"),' +
+            'WY.createElement(v,{color:"#9944FF"}," \\u255A\\u2550\\u2550\\u2550\\u2550\\u2550\\u255D "),' +
+            'WY.createElement(v,{color:"#FF44CC"}," \\u255A\\u2550\\u255D ")))'  +
+        '}'
+    );
+
+    // ── 6. System prompt identity ──
     code = code.replace(
       /You are Claude Code, Anthropic's official CLI for Claude\./g,
       'You are WaytoAGI CLI, an AI-powered coding assistant.'
