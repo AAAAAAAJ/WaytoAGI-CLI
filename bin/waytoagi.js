@@ -48,7 +48,7 @@ if (!fs.existsSync(patchMarker)) {
       'createElement($1,{bold:!0},createElement($1,{color:"#FF4444"},"W"),createElement($1,{color:"#FF8C00"},"a"),createElement($1,{color:"#FFD700"},"y"),createElement($1,{color:"#44FF44"},"t"),createElement($1,{color:"#00CCFF"},"o"),createElement($1,{color:"#4488FF"},"A"),createElement($1,{color:"#9944FF"},"G"),createElement($1,{color:"#FF44CC"},"I"))'
     );
 
-    // ── 3. Replace the "Welcome back" greeting ──
+    // ── 3. Replace "Welcome back" greeting ──
     code = code.replace(
       /return`Welcome back \$\{q\}!`/g,
       'return"\\u2728 WaytoAGI CLI \\u2728"'
@@ -58,41 +58,46 @@ if (!fs.existsSync(patchMarker)) {
       'return"\\u2728 WaytoAGI CLI \\u2728"'
     );
 
-    // ── 4. Replace Clawd cat ASCII art with WaytoAGI text ──
-    // The Clawd body renders "█████" with clawd_body color.
-    // Replace the pose data to show "WaytoAGI" instead of cat face
-    // Original: r1E:"▛███▜" (cat head top), replace all poses
+    // ── 4. Replace Clawd mascot with rainbow ASCII art banner ──
+    // Find: <React>.createElement(<Box>,{marginY:1},<React>.createElement(<ClawdComponent>,null))
+    // Replace with rainbow ASCII art rows
     code = code.replace(
-      /\{default:\{r1L:" ▐",r1E:"▛███▜",r1R:"▌",r2L:"▝▜",r2R:"▛▘"\}[^}]*\}[^}]*\}[^}]*\}[^}]*\}/,
-      '{default:{r1L:"",r1E:"WaytoAGI",r1R:"",r2L:"",r2R:""},"look-left":{r1L:"",r1E:"WaytoAGI",r1R:"",r2L:"",r2R:""},"look-right":{r1L:"",r1E:"WaytoAGI",r1R:"",r2L:"",r2R:""},"arms-up":{r1L:"",r1E:"WaytoAGI",r1R:"",r2L:"",r2R:""}}'
-    );
+      /(\w+)\.createElement\((\w+),\{marginY:1\},\1\.createElement\((\w+),null\)\)/g,
+      function(match, R, Box, Clawd, offset, fullCode) {
+        // Only patch in the logo area (offset ~10M)
+        if (offset < 10000000 || offset > 11000000) return match;
 
-    // Replace the Clawd body "█████" with space (valid React child = string)
-    code = code.replace(
-      /color:"clawd_body",backgroundColor:"clawd_background"\},"█████"\)/g,
-      'color:"#FF8C00"}," ")'
-    );
+        // Find the Text component variable by looking nearby for createElement(X,{dimColor:
+        var nearby = fullCode.substring(offset, Math.min(fullCode.length, offset + 500));
+        var tm = nearby.match(new RegExp(R + '\\.createElement\\((\\w+),\\{dimColor'));
+        var TextComp = tm ? tm[1] : 'v';
 
-    // Replace feet with tagline
-    code = code.replace(
-      /color:"clawd_body"\},"  ","▘▘ ▝▝","  "\)/g,
-      'dimColor:!0},"AI Community \\u00b7 Empowered by AI")'
-    );
+        // ASCII art rows for each letter with its color
+        // W=#FF4444 a=#FF8C00 y=#FFD700 t=#44FF44 o=#00CCFF A=#4488FF G=#9944FF I=#FF44CC
+        var letters = [
+          { c: '#FF4444', rows: ['\u2588\u2588\u2557    \u2588\u2588\u2557','\u2588\u2588\u2551    \u2588\u2588\u2551','\u2588\u2588\u2551 \u2588\u2557 \u2588\u2588\u2551','\u2588\u2588\u2551\u2588\u2588\u2588\u2557\u2588\u2588\u2551','\u255A\u2588\u2588\u2588\u2554\u2588\u2588\u2588\u2554\u255D',' \u255A\u2550\u2550\u255D\u255A\u2550\u2550\u255D '] },
+          { c: '#FF8C00', rows: [' \u2588\u2588\u2588\u2588\u2588\u2557 ','\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557','\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2551','\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2551','\u2588\u2588\u2551  \u2588\u2588\u2551','\u255A\u2550\u255D  \u255A\u2550\u255D'] },
+          { c: '#FFD700', rows: ['\u2588\u2588\u2557   \u2588\u2588\u2557','\u255A\u2588\u2588\u2557 \u2588\u2588\u2554\u255D',' \u255A\u2588\u2588\u2588\u2588\u2554\u255D ','  \u255A\u2588\u2588\u2554\u255D  ','   \u2588\u2588\u2551   ','   \u255A\u2550\u255D   '] },
+          { c: '#44FF44', rows: ['\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557','\u255A\u2550\u2550\u2588\u2588\u2554\u2550\u2550\u255D','   \u2588\u2588\u2551   ','   \u2588\u2588\u2551   ','   \u2588\u2588\u2551   ','   \u255A\u2550\u255D   '] },
+          { c: '#00CCFF', rows: [' \u2588\u2588\u2588\u2588\u2588\u2588\u2557 ','\u2588\u2588\u2554\u2550\u2550\u2550\u2588\u2588\u2557','\u2588\u2588\u2551   \u2588\u2588\u2551','\u2588\u2588\u2551   \u2588\u2588\u2551','\u255A\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255D',' \u255A\u2550\u2550\u2550\u2550\u2550\u255D '] },
+          { c: '#4488FF', rows: [' \u2588\u2588\u2588\u2588\u2588\u2557 ','\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557','\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2551','\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2551','\u2588\u2588\u2551  \u2588\u2588\u2551','\u255A\u2550\u255D  \u255A\u2550\u255D'] },
+          { c: '#9944FF', rows: [' \u2588\u2588\u2588\u2588\u2588\u2588\u2557 ','\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255D ','\u2588\u2588\u2551  \u2588\u2588\u2588\u2557','\u2588\u2588\u2551   \u2588\u2588\u2551','\u255A\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255D',' \u255A\u2550\u2550\u2550\u2550\u2550\u255D '] },
+          { c: '#FF44CC', rows: [' \u2588\u2588\u2557 ',' \u2588\u2588\u2551 ',' \u2588\u2588\u2551 ',' \u2588\u2588\u2551 ',' \u2588\u2588\u2551 ',' \u255A\u2550\u255D '] }
+        ];
 
-    // Hide Clawd side decorations (replace with empty strings, not objects)
-    code = code.replace(
-      /color:"clawd_body"\},"▗"\)/g,
-      'color:"#FF4444"}," ")'
-    );
-    code = code.replace(
-      /color:"clawd_body"\},"▖"\)/g,
-      'color:"#FF44CC"}," ")'
-    );
+        // Build: Box(column) > 6x Box(row) > 8x Text(colored letter row)
+        // v = Text component (Ink), Box = m
+        var rowElements = [];
+        for (var r = 0; r < 6; r++) {
+          var cols = [];
+          for (var l = 0; l < letters.length; l++) {
+            cols.push(R + '.createElement(' + TextComp + ',{color:"' + letters[l].c + '"},' + JSON.stringify(letters[l].rows[r]) + ')');
+          }
+          rowElements.push(R + '.createElement(' + Box + ',{flexDirection:"row"},' + cols.join(',') + ')');
+        }
 
-    // Change Clawd bottom pose text
-    code = code.replace(
-      /default:" ▗   ▖ "/g,
-      'default:" "'
+        return R + '.createElement(' + Box + ',{marginY:1,flexDirection:"column"},' + rowElements.join(',') + ')';
+      }
     );
 
     // ── 5. System prompt identity ──
