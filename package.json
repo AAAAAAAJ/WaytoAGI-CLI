@@ -1,0 +1,20 @@
+{
+  "name": "waytoagi",
+  "version": "1.0.0",
+  "description": "WaytoAGI CLI - AI Community, Empowered by AI",
+  "bin": {
+    "waytoagi": "./bin/waytoagi.js"
+  },
+  "scripts": {
+    "postinstall": "node postinstall.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/claude-code": "latest"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AAAAAAAJ/WaytoAGI-CLI.git"
+  },
+  "keywords": ["ai", "cli", "coding", "agi", "waytoagi"]
+}
