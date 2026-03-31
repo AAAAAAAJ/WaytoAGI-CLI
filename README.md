@@ -16,6 +16,7 @@
 WaytoAGI CLI is an agentic coding tool that lives in your terminal. It understands your codebase, writes code, fixes bugs, runs commands, and helps you build software — all through natural language.
 
 ## Preview
+![6b6269018b70196760cebda1e314e256](https://github.com/user-attachments/assets/aaddf5ba-2630-42c6-a2d2-3c5acfcdd2e0)
 
 ```
 ╭─ WaytoAGI v1.0.0 ──────────────────────────────────────────────────╮
