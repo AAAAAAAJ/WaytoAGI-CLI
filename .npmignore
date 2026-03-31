@@ -1,0 +1,9 @@
+# Only ship the package wrapper, not the source files
+*
+!package.json
+!package-lock.json
+!bin/
+!bin/waytoagi.js
+!postinstall.js
+!README.md
+!LICENSE
