@@ -64,70 +64,25 @@ if (!fs.existsSync(patchMarker)) {
     code = code.replace(
       /function oR6\(q\)\{let K=Y6\(26\)[\s\S]*?return P\}/,
       function(match) {
-        // Find the React and component vars used in the original function
-        // WY = React, v = Text, m = Box (from the original function body)
+        // Replace with compact rainbow "WaytoAGI" text logo
+        // This fits in the narrow left column of the two-column layout
+        // Uses large bold colored letters + a decorative line
         return 'function oR6(q){' +
-          'return WY.createElement(m,{flexDirection:"column"},' +
-            // Row 1
+          'return WY.createElement(m,{flexDirection:"column",alignItems:"center"},' +
+            // Rainbow "WaytoAGI" in bold
             'WY.createElement(m,{flexDirection:"row"},' +
-              'WY.createElement(v,{color:"#FF4444"},"\\u2588\\u2588\\u2557    \\u2588\\u2588\\u2557"),' +
-              'WY.createElement(v,{color:"#FF8C00"}," \\u2588\\u2588\\u2588\\u2588\\u2588\\u2557 "),' +
-              'WY.createElement(v,{color:"#FFD700"},"\\u2588\\u2588\\u2557   \\u2588\\u2588\\u2557"),' +
-              'WY.createElement(v,{color:"#44FF44"},"\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2557"),' +
-              'WY.createElement(v,{color:"#00CCFF"}," \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2557 "),' +
-              'WY.createElement(v,{color:"#4488FF"}," \\u2588\\u2588\\u2588\\u2588\\u2588\\u2557 "),' +
-              'WY.createElement(v,{color:"#9944FF"}," \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2557 "),' +
-              'WY.createElement(v,{color:"#FF44CC"}," \\u2588\\u2588\\u2557 ")),' +
-            // Row 2
-            'WY.createElement(m,{flexDirection:"row"},' +
-              'WY.createElement(v,{color:"#FF4444"},"\\u2588\\u2588\\u2551    \\u2588\\u2588\\u2551"),' +
-              'WY.createElement(v,{color:"#FF8C00"},"\\u2588\\u2588\\u2554\\u2550\\u2550\\u2588\\u2588\\u2557"),' +
-              'WY.createElement(v,{color:"#FFD700"},"\\u255A\\u2588\\u2588\\u2557 \\u2588\\u2588\\u2554\\u255D"),' +
-              'WY.createElement(v,{color:"#44FF44"},"\\u255A\\u2550\\u2550\\u2588\\u2588\\u2554\\u2550\\u2550\\u255D"),' +
-              'WY.createElement(v,{color:"#00CCFF"},"\\u2588\\u2588\\u2554\\u2550\\u2550\\u2550\\u2588\\u2588\\u2557"),' +
-              'WY.createElement(v,{color:"#4488FF"},"\\u2588\\u2588\\u2554\\u2550\\u2550\\u2588\\u2588\\u2557"),' +
-              'WY.createElement(v,{color:"#9944FF"},"\\u2588\\u2588\\u2554\\u2550\\u2550\\u2550\\u2550\\u255D "),' +
-              'WY.createElement(v,{color:"#FF44CC"}," \\u2588\\u2588\\u2551 ")),' +
-            // Row 3
-            'WY.createElement(m,{flexDirection:"row"},' +
-              'WY.createElement(v,{color:"#FF4444"},"\\u2588\\u2588\\u2551 \\u2588\\u2557 \\u2588\\u2588\\u2551"),' +
-              'WY.createElement(v,{color:"#FF8C00"},"\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2551"),' +
-              'WY.createElement(v,{color:"#FFD700"}," \\u255A\\u2588\\u2588\\u2588\\u2588\\u2554\\u255D "),' +
-              'WY.createElement(v,{color:"#44FF44"},"   \\u2588\\u2588\\u2551   "),' +
-              'WY.createElement(v,{color:"#00CCFF"},"\\u2588\\u2588\\u2551   \\u2588\\u2588\\u2551"),' +
-              'WY.createElement(v,{color:"#4488FF"},"\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2551"),' +
-              'WY.createElement(v,{color:"#9944FF"},"\\u2588\\u2588\\u2551  \\u2588\\u2588\\u2588\\u2557"),' +
-              'WY.createElement(v,{color:"#FF44CC"}," \\u2588\\u2588\\u2551 ")),' +
-            // Row 4
-            'WY.createElement(m,{flexDirection:"row"},' +
-              'WY.createElement(v,{color:"#FF4444"},"\\u2588\\u2588\\u2551\\u2588\\u2588\\u2588\\u2557\\u2588\\u2588\\u2551"),' +
-              'WY.createElement(v,{color:"#FF8C00"},"\\u2588\\u2588\\u2554\\u2550\\u2550\\u2588\\u2588\\u2551"),' +
-              'WY.createElement(v,{color:"#FFD700"},"  \\u255A\\u2588\\u2588\\u2554\\u255D  "),' +
-              'WY.createElement(v,{color:"#44FF44"},"   \\u2588\\u2588\\u2551   "),' +
-              'WY.createElement(v,{color:"#00CCFF"},"\\u2588\\u2588\\u2551   \\u2588\\u2588\\u2551"),' +
-              'WY.createElement(v,{color:"#4488FF"},"\\u2588\\u2588\\u2554\\u2550\\u2550\\u2588\\u2588\\u2551"),' +
-              'WY.createElement(v,{color:"#9944FF"},"\\u2588\\u2588\\u2551   \\u2588\\u2588\\u2551"),' +
-              'WY.createElement(v,{color:"#FF44CC"}," \\u2588\\u2588\\u2551 ")),' +
-            // Row 5
-            'WY.createElement(m,{flexDirection:"row"},' +
-              'WY.createElement(v,{color:"#FF4444"},"\\u255A\\u2588\\u2588\\u2588\\u2554\\u2588\\u2588\\u2588\\u2554\\u255D"),' +
-              'WY.createElement(v,{color:"#FF8C00"},"\\u2588\\u2588\\u2551  \\u2588\\u2588\\u2551"),' +
-              'WY.createElement(v,{color:"#FFD700"},"   \\u2588\\u2588\\u2551   "),' +
-              'WY.createElement(v,{color:"#44FF44"},"   \\u2588\\u2588\\u2551   "),' +
-              'WY.createElement(v,{color:"#00CCFF"},"\\u255A\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2554\\u255D"),' +
-              'WY.createElement(v,{color:"#4488FF"},"\\u2588\\u2588\\u2551  \\u2588\\u2588\\u2551"),' +
-              'WY.createElement(v,{color:"#9944FF"},"\\u255A\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2554\\u255D"),' +
-              'WY.createElement(v,{color:"#FF44CC"}," \\u2588\\u2588\\u2551 ")),' +
-            // Row 6
-            'WY.createElement(m,{flexDirection:"row"},' +
-              'WY.createElement(v,{color:"#FF4444"}," \\u255A\\u2550\\u2550\\u255D\\u255A\\u2550\\u2550\\u255D "),' +
-              'WY.createElement(v,{color:"#FF8C00"},"\\u255A\\u2550\\u255D  \\u255A\\u2550\\u255D"),' +
-              'WY.createElement(v,{color:"#FFD700"},"   \\u255A\\u2550\\u255D   "),' +
-              'WY.createElement(v,{color:"#44FF44"},"   \\u255A\\u2550\\u255D   "),' +
-              'WY.createElement(v,{color:"#00CCFF"}," \\u255A\\u2550\\u2550\\u2550\\u2550\\u2550\\u255D "),' +
-              'WY.createElement(v,{color:"#4488FF"},"\\u255A\\u2550\\u255D  \\u255A\\u2550\\u255D"),' +
-              'WY.createElement(v,{color:"#9944FF"}," \\u255A\\u2550\\u2550\\u2550\\u2550\\u2550\\u255D "),' +
-              'WY.createElement(v,{color:"#FF44CC"}," \\u255A\\u2550\\u255D ")))}'
+              'WY.createElement(v,{bold:!0,color:"#FF4444"},"W"),' +
+              'WY.createElement(v,{bold:!0,color:"#FF8C00"},"a"),' +
+              'WY.createElement(v,{bold:!0,color:"#FFD700"},"y"),' +
+              'WY.createElement(v,{bold:!0,color:"#44FF44"},"t"),' +
+              'WY.createElement(v,{bold:!0,color:"#00CCFF"},"o"),' +
+              'WY.createElement(v,{bold:!0,color:"#4488FF"},"A"),' +
+              'WY.createElement(v,{bold:!0,color:"#9944FF"},"G"),' +
+              'WY.createElement(v,{bold:!0,color:"#FF44CC"},"I")),' +
+            // Decorative line
+            'WY.createElement(v,{dimColor:!0},"\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500"),' +
+            // Tagline
+            'WY.createElement(v,{dimColor:!0},"AI Community"))}'
       }
     );
 
