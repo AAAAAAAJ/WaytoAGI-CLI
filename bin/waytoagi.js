@@ -33,124 +33,44 @@ if (!fs.existsSync(patchMarker)) {
     const original = code;
 
     // ── 1. Border titles: "Claude Code" → "WaytoAGI" ──
-    code = code.replace(
-      /(\$\{(\w+)\("claude",\w+\)\()"Claude Code"(\)\})/g,
-      '$1"WaytoAGI"$3'
-    );
-    code = code.replace(
-      /(\w+\("claude",\w+\)\()" Claude Code "(\))/g,
-      '$1" WaytoAGI "$2'
-    );
+    // Search for the specific string literal structure in the UI components
+    code = code.replace(/"Claude Code"/g, '"WaytoAGI"');
+    code = code.replace(/" Claude Code "/g, '" WaytoAGI "');
 
     // ── 2. CondensedLogo: rainbow WaytoAGI ──
     code = code.replace(
-      /createElement\((\w+),\{bold:\s*!0\},"Claude Code"\)/g,
-      'createElement($1,{bold:!0},createElement($1,{color:"#FF4444"},"W"),createElement($1,{color:"#FF8C00"},"a"),createElement($1,{color:"#FFD700"},"y"),createElement($1,{color:"#44FF44"},"t"),createElement($1,{color:"#00CCFF"},"o"),createElement($1,{color:"#4488FF"},"A"),createElement($1,{color:"#9944FF"},"G"),createElement($1,{color:"#FF44CC"},"I"))'
+      /createElement\(\w+,\{bold:\s*!0\},"Claude Code"\)/g,
+      'createElement(t,{bold:!0},createElement(t,{color:"#FF4444"},"W"),createElement(t,{color:"#FF8C00"},"a"),createElement(t,{color:"#FFD700"},"y"),createElement(t,{color:"#44FF44"},"t"),createElement(t,{color:"#00CCFF"},"o"),createElement(t,{color:"#4488FF"},"A"),createElement(t,{color:"#9944FF"},"G"),createElement(t,{color:"#FF44CC"},"I"))'
     );
 
     // ── 3. Replace "Welcome back" greeting ──
-    code = code.replace(
-      /return`Welcome back \$\{q\}!`/g,
-      'return"\\u2728 WaytoAGI CLI \\u2728"'
-    );
-    code = code.replace(
-      /return"Welcome back!"/g,
-      'return"\\u2728 WaytoAGI CLI \\u2728"'
-    );
+    code = code.replace(/return`Welcome back \$\{q\}!`/g, 'return"\\u2728 WaytoAGI CLI \\u2728"');
+    code = code.replace(/return"Welcome back!"/g, 'return"\\u2728 WaytoAGI CLI \\u2728"');
 
-    // ── 4. Force single-column layout (never use horizontal/split) ──
-    // Original: function tkK(q){if(q>=70)return"horizontal";return"compact"}
-    // Change to always return "compact" so we get single-column full-width layout
-    code = code.replace(
-      /function tkK\(q\)\{if\(q>=70\)return"horizontal";return"compact"\}/,
-      'function tkK(q){return"compact"}'
-    );
+    // ── 4. Force single-column layout ──
+    // Find the layout-choosing function by its signature: accepts a width/size parameter, 
+    // checks a threshold, and returns "horizontal" or "compact".
+    const layoutFunctionRegex = /function\s+(\w+)\s*\((\w+)\)\{if\s*\(\2\s*>=?\s*\d+\)\s*return\s*"horizontal";\s*return\s*"compact"\}/;
+    const match = code.match(layoutFunctionRegex);
+    if (match) {
+        code = code.replace(match[0], `function ${match[1]}(${match[2]}){return"compact"}`);
+    } else {
+        console.warn('[waytoagi] Warning: Failed to find layout function to force compact mode.');
+    }
 
-    // ── 5. Replace the entire Clawd mascot component (oR6) with rainbow ASCII art ──
-    code = code.replace(
-      /function oR6\(q\)\{let K=Y6\(26\)[\s\S]*?return P\}/,
-      'function oR6(q){' +
-        'return WY.createElement(m,{flexDirection:"column"},' +
-          // Row 1
-          'WY.createElement(m,{flexDirection:"row"},' +
-            'WY.createElement(v,{color:"#FF4444"},"\\u2588\\u2588\\u2557    \\u2588\\u2588\\u2557"),' +
-            'WY.createElement(v,{color:"#FF8C00"}," \\u2588\\u2588\\u2588\\u2588\\u2588\\u2557 "),' +
-            'WY.createElement(v,{color:"#FFD700"},"\\u2588\\u2588\\u2557   \\u2588\\u2588\\u2557"),' +
-            'WY.createElement(v,{color:"#44FF44"},"\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2557"),' +
-            'WY.createElement(v,{color:"#00CCFF"}," \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2557 "),' +
-            'WY.createElement(v,{color:"#4488FF"}," \\u2588\\u2588\\u2588\\u2588\\u2588\\u2557 "),' +
-            'WY.createElement(v,{color:"#9944FF"}," \\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2557 "),' +
-            'WY.createElement(v,{color:"#FF44CC"}," \\u2588\\u2588\\u2557 ")),' +
-          // Row 2
-          'WY.createElement(m,{flexDirection:"row"},' +
-            'WY.createElement(v,{color:"#FF4444"},"\\u2588\\u2588\\u2551    \\u2588\\u2588\\u2551"),' +
-            'WY.createElement(v,{color:"#FF8C00"},"\\u2588\\u2588\\u2554\\u2550\\u2550\\u2588\\u2588\\u2557"),' +
-            'WY.createElement(v,{color:"#FFD700"},"\\u255A\\u2588\\u2588\\u2557 \\u2588\\u2588\\u2554\\u255D"),' +
-            'WY.createElement(v,{color:"#44FF44"},"\\u255A\\u2550\\u2550\\u2588\\u2588\\u2554\\u2550\\u2550\\u255D"),' +
-            'WY.createElement(v,{color:"#00CCFF"},"\\u2588\\u2588\\u2554\\u2550\\u2550\\u2550\\u2588\\u2588\\u2557"),' +
-            'WY.createElement(v,{color:"#4488FF"},"\\u2588\\u2588\\u2554\\u2550\\u2550\\u2588\\u2588\\u2557"),' +
-            'WY.createElement(v,{color:"#9944FF"},"\\u2588\\u2588\\u2554\\u2550\\u2550\\u2550\\u2550\\u255D "),' +
-            'WY.createElement(v,{color:"#FF44CC"}," \\u2588\\u2588\\u2551 ")),' +
-          // Row 3
-          'WY.createElement(m,{flexDirection:"row"},' +
-            'WY.createElement(v,{color:"#FF4444"},"\\u2588\\u2588\\u2551 \\u2588\\u2557 \\u2588\\u2588\\u2551"),' +
-            'WY.createElement(v,{color:"#FF8C00"},"\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2551"),' +
-            'WY.createElement(v,{color:"#FFD700"}," \\u255A\\u2588\\u2588\\u2588\\u2588\\u2554\\u255D "),' +
-            'WY.createElement(v,{color:"#44FF44"},"   \\u2588\\u2588\\u2551   "),' +
-            'WY.createElement(v,{color:"#00CCFF"},"\\u2588\\u2588\\u2551   \\u2588\\u2588\\u2551"),' +
-            'WY.createElement(v,{color:"#4488FF"},"\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2551"),' +
-            'WY.createElement(v,{color:"#9944FF"},"\\u2588\\u2588\\u2551  \\u2588\\u2588\\u2588\\u2557"),' +
-            'WY.createElement(v,{color:"#FF44CC"}," \\u2588\\u2588\\u2551 ")),' +
-          // Row 4
-          'WY.createElement(m,{flexDirection:"row"},' +
-            'WY.createElement(v,{color:"#FF4444"},"\\u2588\\u2588\\u2551\\u2588\\u2588\\u2588\\u2557\\u2588\\u2588\\u2551"),' +
-            'WY.createElement(v,{color:"#FF8C00"},"\\u2588\\u2588\\u2554\\u2550\\u2550\\u2588\\u2588\\u2551"),' +
-            'WY.createElement(v,{color:"#FFD700"},"  \\u255A\\u2588\\u2588\\u2554\\u255D  "),' +
-            'WY.createElement(v,{color:"#44FF44"},"   \\u2588\\u2588\\u2551   "),' +
-            'WY.createElement(v,{color:"#00CCFF"},"\\u2588\\u2588\\u2551   \\u2588\\u2588\\u2551"),' +
-            'WY.createElement(v,{color:"#4488FF"},"\\u2588\\u2588\\u2554\\u2550\\u2550\\u2588\\u2588\\u2551"),' +
-            'WY.createElement(v,{color:"#9944FF"},"\\u2588\\u2588\\u2551   \\u2588\\u2588\\u2551"),' +
-            'WY.createElement(v,{color:"#FF44CC"}," \\u2588\\u2588\\u2551 ")),' +
-          // Row 5
-          'WY.createElement(m,{flexDirection:"row"},' +
-            'WY.createElement(v,{color:"#FF4444"},"\\u255A\\u2588\\u2588\\u2588\\u2554\\u2588\\u2588\\u2588\\u2554\\u255D"),' +
-            'WY.createElement(v,{color:"#FF8C00"},"\\u2588\\u2588\\u2551  \\u2588\\u2588\\u2551"),' +
-            'WY.createElement(v,{color:"#FFD700"},"   \\u2588\\u2588\\u2551   "),' +
-            'WY.createElement(v,{color:"#44FF44"},"   \\u2588\\u2588\\u2551   "),' +
-            'WY.createElement(v,{color:"#00CCFF"},"\\u255A\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2554\\u255D"),' +
-            'WY.createElement(v,{color:"#4488FF"},"\\u2588\\u2588\\u2551  \\u2588\\u2588\\u2551"),' +
-            'WY.createElement(v,{color:"#9944FF"},"\\u255A\\u2588\\u2588\\u2588\\u2588\\u2588\\u2588\\u2554\\u255D"),' +
-            'WY.createElement(v,{color:"#FF44CC"}," \\u2588\\u2588\\u2551 ")),' +
-          // Row 6
-          'WY.createElement(m,{flexDirection:"row"},' +
-            'WY.createElement(v,{color:"#FF4444"}," \\u255A\\u2550\\u2550\\u255D\\u255A\\u2550\\u2550\\u255D "),' +
-            'WY.createElement(v,{color:"#FF8C00"},"\\u255A\\u2550\\u255D  \\u255A\\u2550\\u255D"),' +
-            'WY.createElement(v,{color:"#FFD700"},"   \\u255A\\u2550\\u255D   "),' +
-            'WY.createElement(v,{color:"#44FF44"},"   \\u255A\\u2550\\u255D   "),' +
-            'WY.createElement(v,{color:"#00CCFF"}," \\u255A\\u2550\\u2550\\u2550\\u2550\\u2550\\u255D "),' +
-            'WY.createElement(v,{color:"#4488FF"},"\\u255A\\u2550\\u255D  \\u255A\\u2550\\u255D"),' +
-            'WY.createElement(v,{color:"#9944FF"}," \\u255A\\u2550\\u2550\\u2550\\u2550\\u2550\\u255D "),' +
-            'WY.createElement(v,{color:"#FF44CC"}," \\u255A\\u2550\\u255D ")))'  +
-        '}'
-    );
-
-    // ── 6. System prompt identity ──
-    code = code.replace(
-      /You are Claude Code, Anthropic's official CLI for Claude\./g,
-      'You are WaytoAGI CLI, an AI-powered coding assistant.'
-    );
-
-    code = code.replace(
-      /"Anthropic's official CLI for Claude"/g,
-      '"AI Community \\u00b7 Empowered by AI"'
-    );
+    // ── 5. System prompt identity ──
+    code = code.replace(/You are Claude Code, Anthropic's official CLI for Claude\./g, 'You are WaytoAGI CLI, an AI-powered coding assistant.');
+    code = code.replace(/"Anthropic's official CLI for Claude"/g, '"AI Community \\u00b7 Empowered by AI"');
 
     if (code !== original) {
       fs.writeFileSync(claudeCli, code, 'utf8');
       fs.writeFileSync(patchMarker, Date.now().toString(), 'utf8');
+      console.log('[waytoagi] Branding applied successfully.');
+    } else {
+      console.warn('[waytoagi] Warning: No changes made to branding, patch might be outdated.');
     }
   } catch (e) {
-    // Patch failed, continue anyway
+    console.error('[waytoagi] Error applying branding patch:', e.message);
   }
 }
 
